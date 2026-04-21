@@ -3,6 +3,8 @@ export const app = express();
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { ErrorMiddleware } from './middleware/Error.js';
+import userRouter from './routes/user.route.js';
+
 // body parser
 app.use(express.json({ limit: "50mb" }));
 
@@ -14,6 +16,10 @@ app.use(cors({
     origin: process.env.ORIGIN,
     credentials: true,
 }));
+
+// Routes
+app.use("/api/v1", userRouter);
+
 
 // Testing API
 app.get('/test', (req: Request, res: Response, next: NextFunction) => {
@@ -30,5 +36,7 @@ app.all('*splat', (req: Request, res: Response, next: NextFunction) => {
     err.statusCode = 404;
     next(err);
 });
+
+
 
 app.use(ErrorMiddleware);
