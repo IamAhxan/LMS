@@ -7,9 +7,15 @@ import ejs from "ejs";
 import path,{ dirname } from "path";
 import { fileURLToPath } from "url";
 import sendMail from "../utils/sendMail.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+
+console.log("JWT_SECRET:", process.env.JWT_SECRET); // ← add this
+console.log("ACTIVATION_SECRET:", process.env.ACTIVATION_SECRET);
 
 // Register a user
 
@@ -121,3 +127,52 @@ export const activateUser = CatchAsyncError(async (req:Request, res:Response, ne
         return next(new ErrorHandler("Failed to activate user", 500));
     }
 });
+
+export const userLogin = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {email, password} = req.body;
+
+        const user = await userModel.findOne({email}).select("+password");
+
+        if(!user){
+            return next(new ErrorHandler("Invalid email address or user does not exist", 401));
+        }
+
+        const isPasswordValid = await user.comparePassword(password);
+
+        if(!isPasswordValid){
+            return next(new ErrorHandler("Invalid Password", 401));
+        }
+
+        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET as Secret, {expiresIn: "7d"});
+        res.status(200).json({
+            success: true,
+            message: "User logged in successfully",
+            token,
+        });
+
+    } catch (error:any) {
+        console.error("User Login Error", error)
+        return next(new ErrorHandler("Failed to login user", 500));
+    }
+})
+
+
+// Logout User
+
+export const userLogout = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+            
+
+
+            res.status(200).json({
+                success: true,
+                message: "User logged out successfully",
+            })
+
+    } catch (error) {
+        console.error("User Logout Error", error)
+        return next(new ErrorHandler("Failed to logout user", 500));
+    }
+})
