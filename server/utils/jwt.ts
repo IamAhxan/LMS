@@ -22,8 +22,10 @@ export const sendToken = (user: IUser, res: Response, statusCode: number) => {
 redis.set(user._id.toString(), JSON.stringify(user) as any); // Set expiration to 7 days
 
     // parse environment variable to integrate with fallback values
-    const accessTokenExpire = parseInt(process.env.ACCESS_TOKEN_EXPIRE || "300", 10); // default to 5 minutes
-    const refreshTokenExpire = parseInt(process.env.REFRESH_TOKEN_EXPIRE || "1200", 10); // default to 5 minutes
+// default to 1 day if .env is missing (86400 seconds)
+const accessTokenExpire = parseInt(process.env.ACCESS_TOKEN_EXPIRE || "86400", 10); 
+// default to 3 days (259200 seconds)
+const refreshTokenExpire = parseInt(process.env.REFRESH_TOKEN_EXPIRE || "259200", 10);
 
     // Options for Cookies
 
