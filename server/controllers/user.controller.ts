@@ -2,13 +2,14 @@ import type { Request, Response, NextFunction } from "express";
 import userModel, { type IUser } from "../models/user.model.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors.js";
-import jwt, { type Secret } from "jsonwebtoken";
+import jwt, { type JwtPayload, type Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import sendMail from "../utils/sendMail.js";
 import dotenv from "dotenv";
-import { sendToken } from "../utils/jwt.js";
+import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt.js";
+import { redis } from "../utils/redis.js";
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -172,6 +173,9 @@ export const logoutUser = CatchAsyncError(
     try {
       res.cookie("access_token", "", { maxAge: 1 });
       res.cookie("refresh_token", "", { maxAge: 1 });
+      const userId = req.user?._id?.toString() || " ";
+
+      redis.del(userId)
 
       res.status(200).json({
         success: true,
@@ -183,3 +187,44 @@ export const logoutUser = CatchAsyncError(
     }
   },
 );
+
+
+
+// Update Access Token
+export const updateAccessToken = CatchAsyncError(async(req:Request, res:Response, next: NextFunction)=> {
+  try {
+    const refresh_token = req.cookies.refresh_token as string
+    const decoded  = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as JwtPayload;
+
+    const message = "Could not refresh token"
+    if(!decoded){
+      return next(new ErrorHandler(message, 400))
+    }
+
+    const session = await redis.get(decoded.id as string);
+
+    if(!session){
+      return next(new ErrorHandler(message, 400))
+    }
+
+    const user = JSON.parse(session);
+
+    const accessToken = jwt.sign({id: user._id}, process.env.ACCESS_TOKEN as string, {
+      expiresIn: "5m"
+    }) 
+    const refreshToken = jwt.sign({id: user._id}, process.env.REFRESH_TOKEN as string, {
+      expiresIn: "3d"
+    })
+    res.cookie("access_token", accessToken, accessTokenOptions );
+    res.cookie("refresh_token", refreshToken, refreshTokenOptions)
+
+
+    res.status(200).json({
+      status: "success",
+      accessToken,
+    })
+
+  } catch (error: any) {
+      return next(new ErrorHandler("Failed to Update Access Token: " + error.message, 500));
+  }
+})
