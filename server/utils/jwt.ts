@@ -58,7 +58,8 @@ export const sendToken = (user: IUser, res: Response, statusCode: number) => {
 
   res.status(statusCode).json({
     success: true,
-    accessToken,
-    refreshToken,
+    user,
+    AccessToken: accessToken,
+    RefreshToken: refreshToken,
   });
 };

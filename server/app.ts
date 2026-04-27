@@ -20,6 +20,15 @@ app.use(cors({
 // Routes
 app.use("/api/v1", userRouter);
 
+// Temporary debug mode
+//TODO delete this before production
+// app.use((err: Error , req: Request, res: Response, next: NextFunction) => {
+//     res.status(500).json({
+//         success: false,
+//         message: err.message,
+//         stack: err.stack, // This will show you the file and line number
+//     });
+// });
 
 // Testing API
 app.get('/test', (req: Request, res: Response, next: NextFunction) => {
