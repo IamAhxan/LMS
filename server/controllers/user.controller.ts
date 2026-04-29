@@ -384,7 +384,7 @@ export const updateUserPassword = CatchAsyncError(
   },
 );
 
-// Update Profile Avatar
+// Update User Profile/,Avatar
 interface IUpdateProfilePicture {
   avatar: string;
 }
@@ -436,3 +436,29 @@ export const updateProfilePicture = CatchAsyncError(
     }
   },
 );
+
+export const updateUserRole = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {userId, role} = req.body as {userId: string, role: string};
+
+    const user = await userModel.findById(userId);
+
+    if(!user){
+      return next(new ErrorHandler("User not found", 404));
+    }
+
+    user.role = role;
+
+    await user.save();
+    await redis.set(userId, JSON.stringify(user));
+
+    res.status(200).json({
+      success: true,
+      message: "User Role updated Successfully",
+      user,
+    })
+
+  } catch (error: any) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+})
