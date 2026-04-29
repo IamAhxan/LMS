@@ -1,6 +1,6 @@
 import express from "express";
 const courseRouter = express.Router();
-import { uploadCourse } from "../controllers/course.controller.js";
+import { editCourse, uploadCourse } from "../controllers/course.controller.js";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth.js";
 
 courseRouter.post(
@@ -8,6 +8,12 @@ courseRouter.post(
   isAuthenticated,
   authorizeRoles("admin"),
   uploadCourse,
+);
+courseRouter.put(
+  "/edit-course/:id",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  editCourse,
 );
 
 export default courseRouter;
