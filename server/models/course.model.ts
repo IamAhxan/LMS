@@ -9,7 +9,7 @@ interface IComment extends Document {
 }
 
 interface IReview extends Document {
-    user: mongoose.Types.ObjectId;
+    user: IUser;
     rating: number;
     comment: string;
     commentReplies: IComment[];
@@ -58,6 +58,7 @@ const reviewSchema: Schema = new Schema<IReview>({
         default:0
     },
     comment:String,
+    commentReplies:[Object]
     
 });
 
