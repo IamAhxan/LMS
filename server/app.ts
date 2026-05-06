@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { ErrorMiddleware } from './middleware/Error.js';
 import userRouter from './routes/user.route.js';
 import courseRouter from './routes/course.routes.js';
+import orderRouter from './routes/order.route.js';
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
@@ -19,8 +20,7 @@ app.use(cors({
 }));
 
 // Routes
-app.use("/api/v1", userRouter);
-app.use("/api/v1", courseRouter);
+app.use("/api/v1", userRouter, courseRouter, orderRouter);
 
 // Temporary debug mode
 //TODO delete this before production

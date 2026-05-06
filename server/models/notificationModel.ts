@@ -4,7 +4,7 @@ interface INotification extends Document {
   title: string;
   message: string;
   status: string;
-  user: string;
+  user: mongoose.Types.ObjectId | string;
 }
 
 const notificationSchema: Schema<INotification> = new Schema(
@@ -22,6 +22,7 @@ const notificationSchema: Schema<INotification> = new Schema(
      required: true,
       default: "unread",
     },
+
   },
   { timestamps: true },
 );

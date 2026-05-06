@@ -23,7 +23,7 @@
     /* Stricter Typechecking Options */
     "strict": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false,
 
     /* Recommended Options */
     "jsx": "react-jsx",
