@@ -6,6 +6,7 @@ import { ErrorMiddleware } from './middleware/Error.js';
 import userRouter from './routes/user.route.js';
 import courseRouter from './routes/course.routes.js';
 import orderRouter from './routes/order.route.js';
+import notificationRouter from './routes/notification.route.js';
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
@@ -20,7 +21,7 @@ app.use(cors({
 }));
 
 // Routes
-app.use("/api/v1", userRouter, courseRouter, orderRouter);
+app.use("/api/v1", userRouter, courseRouter, orderRouter, notificationRouter);
 
 // Temporary debug mode
 //TODO delete this before production

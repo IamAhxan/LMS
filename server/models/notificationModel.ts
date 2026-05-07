@@ -22,6 +22,7 @@ const notificationSchema: Schema<INotification> = new Schema(
      required: true,
       default: "unread",
     },
+      user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, 
 
   },
   { timestamps: true },
