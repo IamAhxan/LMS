@@ -14,7 +14,7 @@ import {
   sendToken,
 } from "../utils/jwt.js";
 import { redis } from "../utils/redis.js";
-import { getUserById } from "../services/user.service.js";
+import { getAllUsersService, getUserById, updateUserRoleService } from "../services/user.service.js";
 import cloudinary from "cloudinary";
 dotenv.config();
 
@@ -427,38 +427,62 @@ export const updateProfilePicture = CatchAsyncError(
       res.status(200).json({
         success: true,
         message: "Profile picture updated successfully",
-       user,
+        user,
       });
-
-
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
   },
 );
 
-export const updateUserRole = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const {userId, role} = req.body as {userId: string, role: string};
+// export const updateUserRole = CatchAsyncError(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const { userId, role } = req.body as { userId: string; role: string };
 
-    const user = await userModel.findById(userId);
+//       const user = await userModel.findById(userId);
 
-    if(!user){
-      return next(new ErrorHandler("User not found", 404));
+//       if (!user) {
+//         return next(new ErrorHandler("User not found", 404));
+//       }
+
+//       user.role = role;
+
+//       await user.save();
+//       await redis.set(userId, JSON.stringify(user));
+
+//       res.status(200).json({
+//         success: true,
+//         message: "User Role updated Successfully",
+//         user,
+//       });
+//     } catch (error: any) {
+//       return next(new ErrorHandler(error.message, 500));
+//     }
+//   },
+// );
+
+// get all users for admin
+
+export const getAllUsers = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllUsersService(res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
     }
+  },
+);
 
-    user.role = role;
 
-    await user.save();
-    await redis.set(userId, JSON.stringify(user));
-
-    res.status(200).json({
-      success: true,
-      message: "User Role updated Successfully",
-      user,
-    })
-
-  } catch (error: any) {
-    return next(new ErrorHandler(error.message, 500));
+// Update User Role --- only admin
+export const updateUserRole = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {id, role} = req.body
+      updateUserRoleService(res, id, role);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
   }
-})
+)

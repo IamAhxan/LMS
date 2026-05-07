@@ -9,7 +9,7 @@ import NotificationModel from "../models/notificationModel.js";
 import path, { dirname } from "path";
 import ejs from "ejs";
 import sendMail from "../utils/sendMail.js";
-import { newOrder } from "../services/order.service.js";
+import { getAllOrdersService, newOrder } from "../services/order.service.js";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -83,6 +83,17 @@ export const createOrder = CatchAsyncError(
       }
       await course.save();
       newOrder(data, res, next);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
+
+// Get all orders for admin
+export const getAllOrders = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllOrdersService(res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
