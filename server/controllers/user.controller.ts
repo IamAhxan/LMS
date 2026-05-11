@@ -209,7 +209,7 @@ export const updateAccessToken = CatchAsyncError(
       const session = await redis.get(decoded.id as string);
 
       if (!session) {
-        return next(new ErrorHandler(message, 400));
+        return next(new ErrorHandler("Please Login to access this resource", 400));
       }
 
       const user = JSON.parse(session);
@@ -328,7 +328,7 @@ export const updateUserInfo = CatchAsyncError(
       }
       await user?.save();
 
-      await redis.set(userId.toString(), JSON.stringify(user));
+      await redis.set(userId.toString(), JSON.stringify(user), "EX", 604800);
 
       res.status(201).json({
         success: true,
