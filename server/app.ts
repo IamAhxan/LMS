@@ -8,6 +8,7 @@ import courseRouter from './routes/course.routes.js';
 import orderRouter from './routes/order.route.js';
 import notificationRouter from './routes/notification.route.js';
 import analyticsRouter from './routes/analytics.route.js';
+import layoutRouter from './routes/layout.route.js';
 
 // body parser
 app.use(express.json({ limit: "50mb" }));
@@ -22,7 +23,7 @@ app.use(cors({
 }));
 
 // Routes
-app.use("/api/v1", userRouter, courseRouter, orderRouter, notificationRouter, analyticsRouter);
+app.use("/api/v1", userRouter, courseRouter, orderRouter, notificationRouter, analyticsRouter,layoutRouter);
 
 // Temporary debug mode
 //TODO delete this before production
