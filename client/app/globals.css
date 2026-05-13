@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Breakpoints */
+  --breakpoint-400px: 400px;
+  --breakpoint-800px: 800px;
+  --breakpoint-1000px: 1000px;
+  --breakpoint-1100px: 1100px;
+  --breakpoint-1200px: 1200px;
+  --breakpoint-1300px: 1300px;
+  --breakpoint-1500px: 1500px;
+
+  /* Fonts */
+  --font-family-Poppins: var(--font-Poppins);
+  --font-family-Josefin: var(--font-Josefin);
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -22,28 +39,17 @@
 body {
   color: var(--foreground);
 }
+
 .hero_animation {
   background-image: linear-gradient(147.92deg, hsla(239, 76%, 53%, 0.456) 10.41%, hsla(0, 0%, 100%, 0) 89.25%);
   animation: changeBackgroundColor 8s infinite alternate;
 }
 
 @keyframes changeBackgroundColor {
-  0%, 100% {
-    opacity: 1;
-  }
-  16.67% {
-    opacity: 0.9;
-  }
-  33.33% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 0.6;
-  }
-  66.67% {
-    opacity: 0.5;
-  }
-  83.33% {
-    opacity: 0.4;
-  }
+  0%, 100% { opacity: 1; }
+  16.67% { opacity: 0.9; }
+  33.33% { opacity: 0.8; }
+  50% { opacity: 0.6; }
+  66.67% { opacity: 0.5; }
+  83.33% { opacity: 0.4; }
 }
