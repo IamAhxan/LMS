@@ -13,8 +13,9 @@
   --breakpoint-1500px: 1500px;
 
   /* Fonts */
-  --font-family-Poppins: var(--font-Poppins);
-  --font-family-Josefin: var(--font-Josefin);
+--font-Josefin: var(--font-Josefin);
+--font-Poppins: var(--font-Poppins);
+
 }
 
 :root {

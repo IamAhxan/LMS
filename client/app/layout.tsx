@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import "./globals.css";
 import { Poppins, Josefin_Sans } from "next/font/google";
 import { ThemeProvider } from "./utils/theme-provider";
@@ -13,11 +12,13 @@ const josefin = Josefin_Sans({
   weight: ["400","500","600","700"],
   variable:"--font-Josefin"
 })
+ 
+
 
 // export const metadata: Metadata = {
 //   title: "ELearning",
 //   description: "Online Learning Platform",
-//    keywords: ["Programming", "MERN", "Redux", "Machine Learning"],
+//    keywords: ["Programming", "MERN", "Redux", "Machine Learning"], 
 // };
 
 export default function RootLayout({
@@ -28,10 +29,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${josefin.variable} h-full antialiased`}
+      className={`${poppins.variable} ${josefin.variable}  h-full antialiased`}
       suppressHydrationWarning  
     >
-      <body className="bg-white! bg-no-repeat! dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300">
+      <body className={`${poppins.variable} ${josefin.variable}  bg-white! bg-no-repeat! dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300`}>
         <ThemeProvider attribute='class' defaultTheme="system" enableSystem>
           {children}
         </ThemeProvider>

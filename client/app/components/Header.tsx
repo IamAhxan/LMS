@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import Link from "next/link";
 import React, { FC, useState } from "react";
