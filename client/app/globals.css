@@ -2,6 +2,8 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+/* @source "../styles"; */
+
 @theme {
   /* Breakpoints */
   --breakpoint-400px: 400px;
