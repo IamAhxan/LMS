@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatar from "../../public/assets/client-1.jpg";
 import { useSession } from "next-auth/react";
-import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import { useLogoutQuery, useSocialAuthMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 
 type Props = {
@@ -28,25 +28,28 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
   const { user } = useSelector((state: any) => state.auth);
-  const { data } = useSession();
+  const { data } =  useSession();
   const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
 
-  useEffect(() => {
-    if (!user) {
-      if (data) {
-        socialAuth({
-          email: data?.user?.email,
-          name: data?.user?.name,
-          avatar: data?.user?.image,
-        });
+ 
 
-      }
+  useEffect(() => {
+
+     if (!user) {
+    if (data) {
+      socialAuth({
+        email: data?.user?.email,
+        name: data?.user?.name,
+        avatar: data?.user?.image,
+      });
     }
+  }
+  console.log(data)
+  if (data === null && !user) {
     if (isSuccess) {
       toast.success("Login successful!");
-      setRoute("");
-      setOpen(false);
     }
+  }
   }, [data, user]);
 
   if (typeof window !== "undefined") {
@@ -100,7 +103,7 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
                 <>
                   <Link href={"/profile"}>
                     <Image
-                      src={user?.avatar ? user.avatar.url : avatar}
+                      src={ user?.avatar?.url || avatar || avatar}
                       alt="User Avatar"
                       width={30}
                       height={30}
