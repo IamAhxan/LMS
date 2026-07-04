@@ -4,8 +4,12 @@ import avatarIcon from "../../../public/assets/client-1.jpg";
 import { Input } from "@mui/material";
 import { AiOutlineCamera } from "react-icons/ai";
 import { styles } from "./../../../styles/style";
-import { useUpdateAvatarMutation } from "@/redux/features/user/userApi";
+import {
+  useEditProfileMutation,
+  useUpdateAvatarMutation,
+} from "@/redux/features/user/userApi";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import toast from "react-hot-toast";
 
 type Props = {
   avatar: string | null;
@@ -15,12 +19,13 @@ type Props = {
 const ProfileInfo: FC<Props> = ({ avatar, user }) => {
   const [name, setName] = useState(user && user.name);
   const [updateAvatar, { isSuccess, error }] = useUpdateAvatarMutation();
-  const [loadUser, setLoadUser] = useState(false)
-  const {refetch} = useLoadUserQuery(undefined, {})
+  const [loadUser, setLoadUser] = useState(false);
+  const [editProfile, { isSuccess: success, error: updateError }] =
+    useEditProfileMutation();
+  const { refetch } = useLoadUserQuery(undefined, {});
   const [avatarPreview, setAvatarPreview] = useState<string | any>(
-    user?.avatar?.url || avatar || avatarIcon
+    user?.avatar?.url || avatar || avatarIcon,
   );
-
 
   useEffect(() => {
     if (user?.avatar?.url) {
@@ -29,11 +34,10 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
   }, [user]);
 
   const imageHandler = async (e: any) => {
-    console.log("clicked")
+    console.log("clicked");
     const fileReader = new FileReader();
     fileReader.onload = () => {
       if (fileReader.readyState === 2) {
-
         const avatar = fileReader.result;
         setAvatarPreview(avatar);
         updateAvatar(avatar);
@@ -42,29 +46,33 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
     fileReader.readAsDataURL(e.target.files[0]);
   };
 
-
-
-  useEffect(()=>{
-    if(isSuccess){
-        refetch();
-        setLoadUser(true)
+  useEffect(() => {
+    if (isSuccess || success) {
+      
+      refetch();
+      setLoadUser(true);
     }
-    if(error){
-        console.log("Image Handler Error:", error)
+    if(isSuccess || success){
+      toast.success("User Info Updated Successfully")
     }
-  },[isSuccess, error])
+    if (error || updateError) {
+      console.log("Image Handler Error:", error);
+    }
+  }, [isSuccess, error, success, updateError]);
 
   const handleSubmit = async (e: any) => {
-    console.log("Submit");
+    e.preventDefault();
+    if (name !== "") {
+      await editProfile({ name: name});
+    }
   };
-              {
-                console.log(user)
-            }
+  {
+    console.log(user);
+  }
   return (
     <>
       <div className="w-full flex justify-center">
         <div className="relative">
-
           <Image
             src={user.avatar || avatar ? user.avatar.url || avatar : avatarIcon}
             alt=""
@@ -87,6 +95,7 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
           </label>
         </div>
       </div>
+
       <br />
       <br />
 
