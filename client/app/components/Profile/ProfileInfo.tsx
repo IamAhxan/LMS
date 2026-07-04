@@ -16,14 +16,26 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
   const [name, setName] = useState(user && user.name);
   const [updateAvatar, { isSuccess, error }] = useUpdateAvatarMutation();
   const [loadUser, setLoadUser] = useState(false)
-  const {} = useLoadUserQuery(undefined, {skip: loadUser? false : true})
+  const {refetch} = useLoadUserQuery(undefined, {})
+  const [avatarPreview, setAvatarPreview] = useState<string | any>(
+    user?.avatar?.url || avatar || avatarIcon
+  );
+
+
+  useEffect(() => {
+    if (user?.avatar?.url) {
+      setAvatarPreview(user.avatar.url);
+    }
+  }, [user]);
 
   const imageHandler = async (e: any) => {
+    console.log("clicked")
     const fileReader = new FileReader();
     fileReader.onload = () => {
       if (fileReader.readyState === 2) {
 
         const avatar = fileReader.result;
+        setAvatarPreview(avatar);
         updateAvatar(avatar);
       }
     };
@@ -34,6 +46,7 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
 
   useEffect(()=>{
     if(isSuccess){
+        refetch();
         setLoadUser(true)
     }
     if(error){
