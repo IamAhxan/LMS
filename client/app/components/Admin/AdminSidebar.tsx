@@ -177,7 +177,7 @@ const AdminSidebar = () => {
                 </Typography>
                 <Typography
                   variant="h6"
-                  className="text-black dark:text-[#ffffffc1] font-Poppins"
+                  className="text-black dark:text-[#ffffffc1] font-Poppins capitalize"
                 >
                   - {user?.role}
                 </Typography>
