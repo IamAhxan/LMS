@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${josefin.variable}  h-full antialiased`}
+      className={`${poppins.variable} ${josefin.variable}  min-h-full antialiased`}
       suppressHydrationWarning  
     >
       <body className={`${poppins.variable} ${josefin.variable}  bg-white! bg-no-repeat! dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300`}>
