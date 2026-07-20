@@ -2,15 +2,18 @@ import express from "express";
 const courseRouter = express.Router();
 import { addAnswer, addQuestion, addReplyToReview, addReview, deleteCourse, editCourse, generateVideoUrl, getAllCourse, getAllCourses, getCourseByUser, getSingleCourse, uploadCourse } from "../controllers/course.controller.js";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth.js";
+import { updateAccessToken } from "../controllers/user.controller.js";
 
 courseRouter.post(
   "/create-course",
+  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   uploadCourse,
 );
 courseRouter.put(
   "/edit-course/:id",
+  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   editCourse,
@@ -25,32 +28,38 @@ courseRouter.get(
 );
 courseRouter.get(
   "/get-course-content/:id",
+  updateAccessToken,
   isAuthenticated,
   getCourseByUser,
 );
 courseRouter.put(
   "/add-question",
+  updateAccessToken,
   isAuthenticated,
   addQuestion,
 );
 courseRouter.put(
   "/add-answer",
+  updateAccessToken,
   isAuthenticated,
   addAnswer,
 );
 courseRouter.put(
   "/add-review/:id",
+  updateAccessToken,
   isAuthenticated,
   addReview,
 );
 courseRouter.put(
   "/add-reply",
+  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   addReplyToReview,
 );
 courseRouter.get(
   "/get-courses-admin",
+  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   getAllCourses,
@@ -61,6 +70,7 @@ courseRouter.post(
 );
 courseRouter.delete(
   "/delete-course/:id",
+  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   deleteCourse,
