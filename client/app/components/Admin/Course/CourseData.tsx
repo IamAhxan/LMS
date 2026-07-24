@@ -80,7 +80,7 @@ const CourseData:FC<Props> = ({benefits, setBenefits, prerequisites, setPrerequi
         </div>
         <div className="w-full flex items-center justify-between">
             <div className="w-full 800px:w-[100px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded mt-8 cursor-pointer" onClick={()=>prevButton()}>Prev</div>
-            <div className="w-full 800px:w-[100px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded mt-8 cursor-pointer" onClick={()=>handleOptions()}>Prev</div>
+            <div className="w-full 800px:w-[100px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-white rounded mt-8 cursor-pointer" onClick={()=>handleOptions()}>Next</div>
         </div>
     </div>
   )

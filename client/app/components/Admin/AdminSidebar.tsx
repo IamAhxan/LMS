@@ -283,13 +283,7 @@ const AdminSidebar = () => {
             />
 
             <SectionTitle title="Extras" isCollapsed={isCollapsed} />
-            <Item
-              title="Settings"
-              to="/admin/settings"
-              icon={<SettingsIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+
             <MenuItem icon={<ExitToAppIcon />} onClick={logoutHandler}>
               <Typography className="!text-[16px] !font-Poppins">
                 Logout
