@@ -92,7 +92,7 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
   };
 
   // 6. Delete Action Handler
-  const handleDeleteUser = async () => {
+  const handleDelete = async () => {
     if (userId) {
       await deleteUser(userId);
     }
@@ -284,7 +284,7 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
                   </div>
                   <div
                     className={`${styles.button} !w-[120px] h-[30px] bg-[#d63031] cursor-pointer text-white flex items-center justify-center`}
-                    onClick={handleDeleteUser}
+                    onClick={handleDelete}
                   >
                     Delete
                   </div>

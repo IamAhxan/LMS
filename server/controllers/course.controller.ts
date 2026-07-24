@@ -37,14 +37,25 @@ export const uploadCourse = CatchAsyncError(
 );
 
 // Edit Course
+// Edit Course
 export const editCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
       const thumbnail = data.thumbnail;
+      const courseId = req.params.id as string;
 
-      if (thumbnail) {
-        await cloudinary.v2.uploader.destroy(thumbnail.public_id);
+      const courseData = (await CourseModel.findById(courseId)) as any;
+
+      if (!courseData) {
+        return next(new ErrorHandler("Course not found", 404));
+      }
+
+      // Handle thumbnail safely regardless of string or object
+      if (typeof thumbnail === "string" && !thumbnail.startsWith("https")) {
+        if (courseData?.thumbnail?.public_id) {
+          await cloudinary.v2.uploader.destroy(courseData.thumbnail.public_id);
+        }
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
           folder: "Courses",
         });
@@ -53,14 +64,23 @@ export const editCourse = CatchAsyncError(
           public_id: myCloud.public_id,
           url: myCloud.secure_url,
         };
+      } else if (typeof thumbnail === "string" && thumbnail.startsWith("https")) {
+        data.thumbnail = {
+          public_id: courseData?.thumbnail?.public_id,
+          url: courseData?.thumbnail?.url,
+        };
       }
 
-      const courseId = req.params.id;
       const course = await CourseModel.findByIdAndUpdate(
         courseId,
         { $set: data },
-        { new: true },
+        { new: true }
       );
+
+      // FIX: Synchronize updated course with Redis Cache
+      if (course) {
+        await redis.set(courseId, JSON.stringify(course), "EX", 604800);
+      }
 
       res.status(201).json({
         success: true,
@@ -70,7 +90,7 @@ export const editCourse = CatchAsyncError(
       console.log(error);
       return next(new ErrorHandler(error.message, 500));
     }
-  },
+  }
 );
 
 // Get single Course Without purchasing
@@ -414,7 +434,7 @@ export const addReplyToReview = CatchAsyncError(
 
 
 
-  export const getAllCourses = CatchAsyncError(
+  export const getAdminAllCourses = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       getAllCoursesService(res);
@@ -425,27 +445,34 @@ export const addReplyToReview = CatchAsyncError(
 );
 
 // Delete Course --- only admin
+// Delete Course --- only admin
 export const deleteCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const {id} = req.params;
+      const { id } = req.params;
+
       const course = await CourseModel.findById(id);
 
       if (!course) {
         return next(new ErrorHandler("Course not found", 404));
       }
-      await course.deleteOne({id});
-      await redis.del(id as string);
+
+      // 1. Delete course from MongoDB
+      await course.deleteOne(); // Call deleteOne() directly on the document instance
+
+      // 2. Invalidate Redis Cache
+      await redis.del(id as string); // Remove specific course cache
+
       res.status(200).json({
         success: true,
         message: "Course deleted successfully",
       });
-      
     } catch (error: any) {
+      console.error("Delete Course Error:", error);
       return next(new ErrorHandler(error.message, 500));
     }
   }
-)
+);
 
 
 // generate video url
