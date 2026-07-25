@@ -5,13 +5,13 @@ import { MdOutlineOndemandVideo } from 'react-icons/md';
 type Props = {
     data: any,
     activeVideo?:number,
-    setActiveVideo: any,
+    setActiveVideo?: any,
     isDemo?:boolean,
 }
 
 const CourseContentList = (props: Props) => {
     const [visibleSections, setVisibleSections] = useState<Set<string>>(
-        new Set<String>()
+        new Set<string>()
     );
 
 
