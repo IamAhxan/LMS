@@ -4,6 +4,10 @@ import React, {FC, useState} from 'react';
 import Heading from './utils/Heading';
 import Header from './components/Header';
 import Hero from './components/Route/Hero'
+import Courses from './components/Route/Courses'
+import Reviews from './components/Route/Reviews'
+import Footer from './components/Route/Footer'
+import FAQ from './components/FAQ/FAQ'
 
 // interface Props{
 
@@ -30,6 +34,10 @@ const Page= () => {
       setRoute={setRoute}
       />
       <Hero />
+      <Courses/>
+      <Reviews/>
+      <FAQ/>
+      <Footer/>
     </div>
   )
 };

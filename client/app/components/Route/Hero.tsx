@@ -1,3 +1,4 @@
+import { useGetHeroDataQuery } from '@/redux/features/layout/layoutApi';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { FC } from 'react'
@@ -6,6 +7,9 @@ import { BiSearch } from 'react-icons/bi';
 
 
 const Hero: FC = () => {
+    const { data } = useGetHeroDataQuery("Banner");
+
+
   return (
     // Added 'relative' and 'overflow-hidden' to ensure the background animation stays contained
     <div className='w-full 1000px:flex items-center relative min-h-screen overflow-hidden '>
@@ -18,7 +22,7 @@ const Hero: FC = () => {
       {/* 45% width provides better balance for the image at 1100px */}
       <div className="1000px:w-[50%] flex 1000px:min-h-screen items-center justify-end pt-[70px] 1000px:pt-[0] z-10">
         <Image
-          src="/assets/banner-img-1.png"
+          src={data?.layout?.banner?.image?.url}
           alt="Online Learning Banner"
           width={1200}
           height={800}
@@ -33,12 +37,12 @@ const Hero: FC = () => {
         
         {/* Heading: Removed max-width that caused the alignment gap */}
         <h2 className='1000px:pr-50 1500px:pr-0 dark:text-white text-[#000000c7] text-[32px] w-full 1000px:text-[55px] 1500px:text-[60px] font-[600] font-Josefin py-2 1000px:leading-[65px] 1500px:leading-[75px]'>
-          Improve Your Online Learning Experience Better Instantly
+         {data?.layout?.banner?.title}
         </h2>
 
         {/* Paragraph: Controlled width for readability at high resolutions */}
         <p className="dark:text-[#edfff4] text-[#000000ac] font-Josefin font-[600] text-[18px] mt-4 1100px:w-[85%] 1500px:w-[60%]">
-          We have 40k+ Online courses & 500k+ Online registered students. Find your desired Courses from them.
+          {data?.layout?.banner?.subTitle}
         </p>
 
         {/* Search Input: Fixed the dark:placeholder typo */}
