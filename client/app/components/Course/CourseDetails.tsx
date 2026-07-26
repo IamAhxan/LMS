@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import CoursePlayer from "@/app/utils/CoursePlayer";
 import Ratings from "@/app/utils/Ratings";
 import { format } from "timeago.js";
@@ -8,6 +8,7 @@ import { IoCheckmarkDoneOutline, IoCloseOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import CourseContentList from "../Course/CourseContentList"
+import { useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
 
 
 type Props = {
@@ -18,8 +19,10 @@ type Props = {
   setRoute?: (route: string) => void;
 };
 
-const CourseDetails = ({ data, setOpen, setRoute }: Props) => {
+const CourseDetails = ({ data }: Props) => {
   const { user } = useSelector((state: any) => state.auth);
+  const [open, setOpen] = useState(false)
+
 
   const discountPercentage =
     data?.estimatedPrice && data?.price
@@ -35,9 +38,9 @@ const CourseDetails = ({ data, setOpen, setRoute }: Props) => {
     if (user) {
       // Logic for initiating payment/order modal
       console.log("Processing order...");
+      setOpen(true)
     } else {
-      setRoute?.("Login");
-      setOpen?.(true);
+
     }
   };
 
@@ -232,6 +235,25 @@ const CourseDetails = ({ data, setOpen, setRoute }: Props) => {
           </div>
         </div>
       </div>
+
+
+
+
+      <>
+  {open && (
+    <div className="w-full h-screen bg-[#00000036] fixed top-0 left-0 z-50 flex items-center justify-center">
+      <div className="w-[500px] min-h-[500px] bg-white rounded-xl shadow p-3">
+        <div className="w-full flex justify-end">
+          <IoCloseOutline
+            size={40}
+            className="text-black cursor-pointer"
+            onClick={() => setOpen(false)}
+          />
+        </div>
+      </div>
+    </div>
+  )}
+</>
     </div>
   );
 };
