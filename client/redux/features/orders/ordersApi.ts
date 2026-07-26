@@ -13,7 +13,7 @@ export const ordersApi = apiSlice.injectEndpoints({
             query: () => ({
                 url: `payment/stripepublishablekey`,
                 method: "GET",
-                credential: "include" as const
+                credentials: "include" as const
             })
         }),
         createPaymentIntent: builder.mutation({

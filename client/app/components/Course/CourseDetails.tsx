@@ -9,6 +9,8 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import CourseContentList from "../Course/CourseContentList"
 import { useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
+import {Elements} from "@stripe/react-stripe-js"
+import CheckoutForm from "../Payment/CheckOutForm"
 
 
 type Props = {
@@ -19,7 +21,7 @@ type Props = {
   setRoute?: (route: string) => void;
 };
 
-const CourseDetails = ({ data }: Props) => {
+const CourseDetails = ({ data,clientSecret,stripePromise }: Props) => {
   const { user } = useSelector((state: any) => state.auth);
   const [open, setOpen] = useState(false)
 
@@ -249,6 +251,15 @@ const CourseDetails = ({ data }: Props) => {
             className="text-black cursor-pointer"
             onClick={() => setOpen(false)}
           />
+        </div>
+        <div className="w-full">
+          {
+            stripePromise && clientSecret &&(
+              <Elements stripe={stripePromise} options={{clientSecret}}>
+                <CheckoutForm setOpen={setOpen} data={data}/>
+              </Elements>
+            )
+          }
         </div>
       </div>
     </div>

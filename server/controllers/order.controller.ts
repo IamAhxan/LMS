@@ -14,19 +14,25 @@ import { fileURLToPath } from "url";
 import { redis } from "../utils/redis.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-require("dotenv").config();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+import dotenv from "dotenv";
+import Stripe from "stripe";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 // Create Order
 
 export const createOrder = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      if (!req.user?._id) {
+        return next(new ErrorHandler("User not authenticated", 401));
+      }
+      const userId = req.user._id.toString();
+
       const { courseId, payment_info } = req.body as IOrder;
 
       if (payment_info) {
         if ("id" in payment_info) {
-          const paymentIntentId = payment_info.id;
+          const paymentIntentId = payment_info.id as string;
           const paymentIntent =
             await stripe.paymentIntents.retrieve(paymentIntentId);
 
@@ -36,8 +42,11 @@ export const createOrder = CatchAsyncError(
         }
       }
 
-      const user = await userModel.findById(req.user?._id);
-      const courseExistInUser = user?.courses.some(
+      const user = await userModel.findById(userId);
+
+      if (!user) return next(new ErrorHandler("User not found", 404));
+
+      const courseExistInUser = user.courses.some(
         (course: any) => course.courseId === courseId,
       );
       if (courseExistInUser)
@@ -51,7 +60,7 @@ export const createOrder = CatchAsyncError(
 
       const data: any = {
         courseId: course._id,
-        userId: user?._id,
+        userId: user._id,
         payment_info,
       };
 
@@ -74,36 +83,30 @@ export const createOrder = CatchAsyncError(
       );
 
       try {
-        if (user) {
-          await sendMail({
-            email: user.email,
-            subject: "New Order Placed",
-            template: "order-confirmation.ejs",
-            data: mailData,
-          });
-        }
+        await sendMail({
+          email: user.email,
+          subject: "New Order Placed",
+          template: "order-confirmation.ejs",
+          data: mailData,
+        });
       } catch (error: any) {
         return next(new ErrorHandler(error.message, 500));
       }
 
-      user?.courses.push({ courseId: course._id.toString() });
+      user.courses.push({ courseId: course._id.toString() });
 
-      if (!req.user?._id) {
-        return next(new ErrorHandler("User not authenticated", 401));
-      }
-
-      await redis.set(req.user._id.toString(), JSON.stringify(user));
-      await user?.save();
+      await redis.set(userId, JSON.stringify(user));
+      await user.save();
 
       await NotificationModel.create({
-        user: user?._id.toString(),
+        user: user._id.toString(),
         title: "New Order Placed",
         message: `You have a new order from ${course?.name}`,
       });
-      if (course.purchased) {
-        course.purchased ? (course.purchased += 1) : (course.purchased = 1);
-      }
+
+      course.purchased = (course.purchased || 0) + 1;
       await course.save();
+
       newOrder(data, res, next);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));

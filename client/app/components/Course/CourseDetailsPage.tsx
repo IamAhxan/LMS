@@ -10,7 +10,7 @@ import {loadStripe} from "@stripe/stripe-js"
 
 type Props = {
   id: string;
-  
+
 };
 
 const CourseDetailsPage: FC<Props> = ({ id }) => {
@@ -35,7 +35,7 @@ const CourseDetailsPage: FC<Props> = ({ id }) => {
 
   useEffect(()=>{
     if(paymentIntentData){
-      setClientSecret(paymentIntentData?.clientSecret)
+      setClientSecret(paymentIntentData?.client_secret)
     }
   },[paymentIntentData])
 
