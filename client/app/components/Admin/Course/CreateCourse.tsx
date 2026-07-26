@@ -79,20 +79,21 @@ const CreateCourse = (props: Props) => {
       suggestion: courseContent.suggestion,
     }));
 
-    return {
-      name: courseInfo.name,
-      description: courseInfo.description,
-      price: courseInfo.price,
-      estimatedPrice: courseInfo.estimatedPrice,
-      tags: courseInfo.tags,
-      thumbnail: courseInfo.thumbnail,
-      level: courseInfo.level,
-      demoUrl: courseInfo.demoUrl,
-      totalVideos: courseContentData.length,
-      benefits: formattedBenefits,
-      prerequisites: formattedPrerequisites,
-      courseData: formattedCourseContentData,
-    };
+return {
+  name: courseInfo.name,
+  description: courseInfo.description,
+  price: courseInfo.price,
+  estimatedPrice: courseInfo.estimatedPrice,
+  tags: courseInfo.tags,
+  categories: courseInfo.categories,  // add this
+  thumbnail: courseInfo.thumbnail,
+  level: courseInfo.level,
+  demoUrl: courseInfo.demoUrl,
+  totalVideos: courseContentData.length,
+  benefits: formattedBenefits,
+  prerequisites: formattedPrerequisites,
+  courseData: formattedCourseContentData,
+};
   };
 
   const handleSubmit = async () => {

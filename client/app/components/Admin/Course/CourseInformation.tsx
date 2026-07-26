@@ -162,15 +162,16 @@ const CourseInformation: FC<Props> = ({
             <label className={`${styles.label} w-[50%]`}>
               Course Categories
             </label>
-            <select
-              className={`${styles.input}`}
-              name=""
-              id=""
-              value={courseInfo.category}
-              onChange={(e: any) =>
-                setCourseInfo({ ...courseInfo, category: e.target.value })
-              }
-            >
+<select
+  className={`${styles.input}`}
+  required
+  name=""
+  id=""
+  value={courseInfo.categories}
+  onChange={(e: any) =>
+    setCourseInfo({ ...courseInfo, categories: e.target.value })
+  }
+>
               <option className="bg-white text-black" value="">
                 Select Category
               </option>
