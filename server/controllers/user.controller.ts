@@ -14,7 +14,11 @@ import {
   sendToken,
 } from "../utils/jwt.js";
 import { redis } from "../utils/redis.js";
-import { getAllUsersService, getUserById, updateUserRoleService } from "../services/user.service.js";
+import {
+  getAllUsersService,
+  getUserById,
+  updateUserRoleService,
+} from "../services/user.service.js";
 import cloudinary from "cloudinary";
 dotenv.config();
 
@@ -209,7 +213,9 @@ export const updateAccessToken = CatchAsyncError(
       const session = await redis.get(decoded.id as string);
 
       if (!session) {
-        return next(new ErrorHandler("Please Login to access this resource", 400));
+        return next(
+          new ErrorHandler("Please Login to access this resource", 400),
+        );
       }
 
       const user = JSON.parse(session);
@@ -261,7 +267,7 @@ export const getUserInfo = CatchAsyncError(
   },
 );
 
-//TODO Social Authentication (Google, Facebook, etc.) can be implemented here using Passport.js or similar libraries, depending on the requirements of the application.
+// Social Authentication, Login with Google, Microsoft, Facebook or Github
 
 interface ISocialAuthBody {
   email: string;
@@ -310,7 +316,6 @@ export const updateUserInfo = CatchAsyncError(
       const userId = req?.user?._id!;
 
       const user = await userModel.findById(userId);
-
 
       if (name && user) {
         user.name = name;
@@ -463,37 +468,35 @@ export const getAllUsers = CatchAsyncError(
   },
 );
 
-
 // Update User Role --- only admin
 export const updateUserRole = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const {id, role} = req.body
+      const { id, role } = req.body;
       updateUserRoleService(res, id, role);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
-  }
-)
+  },
+);
 // Delete User --- only admin
 export const deleteUser = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const {id} = req.params;
+      const { id } = req.params;
       const user = await userModel.findById(id);
 
       if (!user) {
         return next(new ErrorHandler("User not found", 404));
       }
-      await user.deleteOne({id});
+      await user.deleteOne({ id });
       await redis.del(id as string);
       res.status(200).json({
         success: true,
         message: "User deleted successfully",
       });
-      
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
-  }
-)
+  },
+);

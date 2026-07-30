@@ -5,7 +5,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 
 type Props = {
   open?: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen?: (open: boolean) => void;
 };
 
 const DashboardHeader: FC<Props> = ({open, setOpen}) => {
@@ -16,7 +16,7 @@ const DashboardHeader: FC<Props> = ({open, setOpen}) => {
       <ThemeSwitcher />
       <div
         className="relative cursor-pointer m-2"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen && setOpen(!open)}
       >
         <IoMdNotificationsOutline className="text-2xl cursor-pointer dark:text-white text-black" />
         <span className="absolute -top-2 -right-2 bg-[#3ccba0] rounded-full w-[20px] h-[20px] text-[12px] flex items-center justify-center text-white">

@@ -11,6 +11,7 @@ import CourseContentList from "../Course/CourseContentList"
 import { useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
 import {Elements} from "@stripe/react-stripe-js"
 import CheckoutForm from "../Payment/CheckOutForm"
+import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 
 
 type Props = {
@@ -22,7 +23,8 @@ type Props = {
 };
 
 const CourseDetails = ({ data,clientSecret,stripePromise }: Props) => {
-  const { user } = useSelector((state: any) => state.auth);
+const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
+  const user = userData?.user;
   const [open, setOpen] = useState(false)
 
 
