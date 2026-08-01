@@ -5,6 +5,9 @@ import { useLogoutQuery } from '@/redux/features/auth/authApi';
 import { signOut } from 'next-auth/react';
 import ProfileInfo from './ProfileInfo';
 import ChangePassword from './ChangePassword';
+import { useDispatch } from 'react-redux';
+import { apiSlice } from '@/redux/features/api/apiSlice';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   user:any;
@@ -15,15 +18,18 @@ const Profile:FC<Props> = ({user}) => {
     const [avatar, setAvatar] = useState(null)
     const [active, setActive] = useState(1)
     const [logout, setLogout] = useState(false)
-    const {} =   useLogoutQuery(undefined, {
-      skip: !logout ? true : false,
+    const dispatch = useDispatch();
+    const router = useRouter();
+
+    const {} = useLogoutQuery(undefined, {
+      skip: !logout,
     })
 
-
     const logoutHandler = async () => {
+      setLogout(true);
       await signOut({ redirect: false });
-      setLogout(true)
-
+      dispatch(apiSlice.util.resetApiState());
+      router.push("/");
     }
 
     if(typeof window !== "undefined"){
@@ -45,10 +51,7 @@ const Profile:FC<Props> = ({user}) => {
         avatar={avatar}
         setActive={setActive}
         logoutHandler={logoutHandler}
-
         />
-        
-
       </div>
       {
           active === 1 && (

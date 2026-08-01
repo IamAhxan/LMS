@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CoursePlayer from "@/app/utils/CoursePlayer";
 import Ratings from "@/app/utils/Ratings";
 import { format } from "timeago.js";
@@ -35,9 +35,7 @@ const CourseDetails = ({
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (userData) {
-      setUser(userData);
-    }
+   setUser(userData?.user);
   }, [userData]);
 
 
@@ -49,7 +47,7 @@ const CourseDetails = ({
   const discountPercentagePrice = discountPercentage.toFixed(0);
 
   const isPurchased =
-    user && user?.courses?.some((item: any) => item._id === data?._id);
+    user && user?.courses?.some((item: any) => item.courseId === data?._id);
 
   const handleOrder = (e: any) => {
     if (user) {
@@ -258,7 +256,8 @@ const CourseDetails = ({
                   </Link>
                 ) : (
                   <button
-                    className="w-full py-3 px-6 bg-[#e53935] text-white font-Poppins font-semibold rounded-full cursor-pointer hover:bg-[#c62828] transition-all"
+                    disabled={isLoading}
+                    className="w-full py-3 px-6 bg-[#e53935] text-white font-Poppins font-semibold rounded-full cursor-pointer hover:bg-[#c62828] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                     onClick={handleOrder}
                   >
                     Buy Now {data?.price}$

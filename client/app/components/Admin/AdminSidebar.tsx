@@ -77,8 +77,7 @@ const AdminSidebar = () => {
   }
 
   const logoutHandler = () => {
-    // Wire up your logout mutation/action here
-    console.log("Logging out...");
+    localStorage.removeItem("token");
   };
 
   return (
