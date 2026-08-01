@@ -1,6 +1,9 @@
 "use client";
 import CoursePlayer from "@/app/utils/CoursePlayer";
-import { useAddNewQuestionMutation } from "@/redux/features/courses/coursesApi";
+import {
+  useAddAnswerInQuestionMutation,
+  useAddNewQuestionMutation,
+} from "@/redux/features/courses/coursesApi";
 import { styles } from "@/styles/style";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -11,6 +14,8 @@ import {
   AiOutlineArrowRight,
   AiOutlineStar,
 } from "react-icons/ai";
+import { BiMessage } from "react-icons/bi";
+import { VscVerifiedFilled } from "react-icons/vsc";
 import { format } from "timeago.js";
 
 type Props = {
@@ -36,12 +41,21 @@ const CourseContentMedia = ({
   const [review, setReview] = useState("");
   const [rating, setRating] = useState(1);
   const [answer, setAnswer] = useState("");
-  const [answerId, setAnswerId] = useState("");
+  const [questionId, setQuestionId] = useState("");
 
   const [
     addNewQuestion,
     { isSuccess, error, isLoading: questionCreationLoading },
   ] = useAddNewQuestionMutation({});
+
+  const [
+    addAnswerInQuestion,
+    {
+      isSuccess: answerSuccess,
+      error: answerError,
+      isLoading: answerCreationLoading,
+    },
+  ] = useAddAnswerInQuestionMutation();
 
   const isReviewExists = data?.reviews?.find(
     (item: any) => item.user._id === user._id,
@@ -65,14 +79,29 @@ const CourseContentMedia = ({
       refetch();
       toast.success("Question Added Successfully");
     }
+    if (answerSuccess) {
+      setAnswer("");
+      refetch();
+      toast.success("Answer Added Successfully");
+    }
     if (error && "data" in error) {
       const errorMessage = error.data as any;
       toast.error(errorMessage.data.message);
     }
-  }, [isSuccess, error]);
+    if (answerError && "data" in answerError) {
+      const errorMessage = answerError.data as any;
+      toast.error(errorMessage.data.message);
+    }
+  }, [isSuccess, error, answerSuccess, answerError]);
 
   const handleAnswerSubmit = () => {
-    console.log("Answer Submit");
+    //  answer, courseId, contentId, questionId
+    addAnswerInQuestion({
+      answer,
+      courseId: id,
+      contentId: data[activeVideo]._id,
+      questionId,
+    });
   };
 
   return (
@@ -196,7 +225,8 @@ const CourseContentMedia = ({
               setAnswer={setAnswer}
               handleAnswerSubmit={handleAnswerSubmit}
               user={user}
-              setAnswerId={setAnswerId}
+              setQuestionId={setQuestionId}
+              answerCreationLoading={answerCreationLoading}
             />
           </div>
         </>
@@ -278,7 +308,8 @@ const CommentReply = ({
   setAnswer,
   handleAnswerSubmit,
   user,
-  setAnswerId,
+  setQuestionId,
+  answerCreationLoading,
 }: any) => {
   return (
     <>
@@ -292,7 +323,9 @@ const CommentReply = ({
             index={index}
             answer={answer}
             setAnswer={setAnswer}
+            setQuestionId={setQuestionId}
             handleAnswerSubmit={handleAnswerSubmit}
+            answerCreationLoading={answerCreationLoading}
           />
         ))}
       </div>
@@ -302,19 +335,21 @@ const CommentReply = ({
 
 const CommentItem = ({
   data,
-  activeVideo,
   item,
   index,
   answer,
   setAnswer,
+  setQuestionId,
   handleAnswerSubmit,
+  answerCreationLoading,
 }: any) => {
+  const [replyActive, setReplyActive] = useState(false);
   return (
     <>
       <div className="my-4">
         <div className="flex mb-2">
-         <div className="">
-                      <Image
+          <div className="">
+            <Image
               src={
                 item?.user?.avatar
                   ? item.user.avatar.url
@@ -325,16 +360,88 @@ const CommentItem = ({
               alt=""
               className="rounded-full w-[50px] h-[50px] object-cover "
             />
-
-         </div>
-          <div className="pl-3">
+          </div>
+          <div className="pl-3 dark:text-white text-black">
             <h5 className="text-[20px]">{item?.user?.name}</h5>
             <p>{item?.question}</p>
-            <small className="text-[#ffffff83]">
-              {!item.createdAt ?  " " : format(item?.createdAt)} •
+            <small className="text-[#000000b8] dark:text-[#ffffff83]">
+              {!item.createdAt ? " " : format(item?.createdAt)} •
             </small>
           </div>
         </div>
+
+        <div className="w-full flex">
+          <span
+            className="800px:pl-16text-[#000000b8] dark:text-[#ffffff83] cursor-pointer mr-2"
+            onClick={() => {
+              (setReplyActive(!replyActive), setQuestionId(item._id));
+            }}
+          >
+            {!replyActive
+              ? item.questionReplies.length !== 0
+                ? "AllReplies"
+                : "Add Reply"
+              : "Hide Replies"}
+          </span>
+          <BiMessage
+            size={20}
+            className=" text-[#000000b8] dark:text-[#ffffff83] cursor-pointer"
+          />
+          <span className="pl-1 mt-[-4px] cursor-pointer text-[#000000b8] dark:text-[#ffffff83]">
+            {item.questionReplies.length}
+          </span>
+        </div>
+        {replyActive && (
+          <>
+            {item.questionReplies.map((item: any) => (
+              <div className="w-full flex 800px:ml-16 my-5 text-black dark:text-white">
+                <div>
+                  <Image
+                    src={
+                      item?.user?.avatar
+                        ? item.user.avatar.url
+                        : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                    }
+                    width={50}
+                    height={50}
+                    alt=""
+                    className="rounded-full w-[50px] h-[50px] object-cover "
+                  />
+                </div>
+                <div className="pl-3">
+                  <div className="flex items-center">
+                    <h5 className="text-[20px]">{item?.user?.name}</h5> <VscVerifiedFilled size={20} className="text-[#50c750] ml-2 text-[20px]"/>
+                  </div>
+                  <p>{item.answer}</p>
+                  <small className="text-[#000000b8] dark:text-[#ffffff83]">
+                    {format(item.createdAt)} •
+                  </small>
+                </div>
+              </div>
+            ))}
+
+            <>
+              <div className="w-full flex relative text-black dark:text-white">
+                <input
+                  type="text"
+                  placeholder="Enter your reply..."
+                  value={answer}
+                  onChange={(e: any) => setAnswer(e.target.value)}
+                  className={`text-black dark:text-white block 800px:ml-12 mt-2 outline-none bg-transparent border-b border-[#00000027] dark:border-[#fff] p-[5px] w-[95%] ${answerCreationLoading || (answer === "" && "cursor-not-allowed")}`}
+                />
+                <button
+                  type="submit"
+                  className="absolute right-0 bottom-1"
+                  onClick={handleAnswerSubmit}
+                  disabled={answer === "" || answerCreationLoading}
+                >
+                  Submit
+                </button>
+              </div>
+              <br />
+            </>
+          </>
+        )}
       </div>
     </>
   );
