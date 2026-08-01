@@ -7,12 +7,13 @@ import { format } from "timeago.js";
 import { IoCheckmarkDoneOutline, IoCloseOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import Link from "next/link";
-import CourseContentList from "../Course/CourseContentList"
+import CourseContentList from "../Course/CourseContentList";
 import { useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
-import {Elements} from "@stripe/react-stripe-js"
-import CheckoutForm from "../Payment/CheckOutForm"
+import { Elements } from "@stripe/react-stripe-js";
+import CheckoutForm from "../Payment/CheckOutForm";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
-
+import Image from "next/image";
+import { VscVerifiedFilled } from "react-icons/vsc";
 
 type Props = {
   data: any;
@@ -22,11 +23,10 @@ type Props = {
   setRoute?: (route: string) => void;
 };
 
-const CourseDetails = ({ data,clientSecret,stripePromise }: Props) => {
-const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
+const CourseDetails = ({ data, clientSecret, stripePromise }: Props) => {
+  const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
   const user = userData?.user;
-  const [open, setOpen] = useState(false)
-
+  const [open, setOpen] = useState(false);
 
   const discountPercentage =
     data?.estimatedPrice && data?.price
@@ -42,9 +42,8 @@ const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
     if (user) {
       // Logic for initiating payment/order modal
       console.log("Processing order...");
-      setOpen(true)
+      setOpen(true);
     } else {
-
     }
   };
 
@@ -57,7 +56,7 @@ const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
             <h1 className="text-[25px] font-Poppins font-[600] text-black dark:text-white">
               {data?.name}
             </h1>
-            
+
             <div className="flex items-center justify-between pt-3">
               <div className="flex items-center">
                 <Ratings rating={data?.ratings} />
@@ -115,14 +114,13 @@ const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
             <br />
 
             <div>
-                <h1 className="text-[25px] font-Poppins font-[600] text-black dark:text-white">
-                    Course Overview
-                </h1>
-                <CourseContentList data={data?.courseData}/>
+              <h1 className="text-[25px] font-Poppins font-[600] text-black dark:text-white">
+                Course Overview
+              </h1>
+              <CourseContentList data={data?.courseData} />
             </div>
             <br />
             <br />
-
 
             {/* Course Details Description */}
             <div className="w-full">
@@ -154,14 +152,20 @@ const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
                 [...data.reviews].reverse().map((item: any, index: number) => (
                   <div className="w-full pb-4" key={index}>
                     <div className="flex gap-3">
-                      <div className="w-[50px] h-[50px]">
-                        <div className="w-[50px] h-[50px] bg-slate-600 rounded-full flex items-center justify-center cursor-pointer">
-                          <h1 className="uppercase text-[18px] text-white">
-                            {item?.user?.name?.slice(0, 2)}
-                          </h1>
-                        </div>
+                      <div className="">
+                        <Image
+                          src={
+                            item?.user?.avatar
+                              ? item.user.avatar.url
+                              : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                          }
+                          width={50}
+                          height={50}
+                          alt=""
+                          className="rounded-full w-[50px] h-[50px] object-cover "
+                        />
                       </div>
-                      
+
                       <div className="w-full">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
@@ -179,6 +183,33 @@ const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
                         </small>
                       </div>
                     </div>
+                    {item.commentReplies.map((i: any, index: number) => (
+                      <div className="w-full flex 800px:ml-16 my-5 text-black dark:text-white">
+                        <div className="w-[50px] h-[50px]">
+                          <Image
+                            src={
+                              i.user.avatar
+                                ? i.user.avatar.url
+                                : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                            }
+                            width={50}
+                            height={50}
+                            alt=""
+                            className="w-[50px] h-[50px] rounded-full object-cover"
+                          />
+                        </div>
+                        <div className="pl-2">
+                          <div className="flex items-center">
+                            <h5 className="text-[20px]">{i.user.name}</h5>{" "}
+                            <VscVerifiedFilled className="text-[#0095F6] ml-2 text-[20px]" />
+                          </div>
+                          <p>{i.comment}</p>
+                          <small className="text-[#ffffff83]">
+                            {format(i.createdAt)} •
+                          </small>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ))}
             </div>
@@ -188,7 +219,7 @@ const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
           <div className="w-full 800px:w-[35%] relative">
             <div className="sticky top-[100px] left-0 z-50 w-full">
               <CoursePlayer videoUrl={data?.demoUrl} title={data?.title} />
-              
+
               <div className="flex items-center pt-3">
                 <h1 className="text-[25px] text-black dark:text-white font-semibold">
                   {data?.price === 0 ? "Free" : `${data?.price}$`}
@@ -240,33 +271,28 @@ const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
         </div>
       </div>
 
-
-
-
       <>
-  {open && (
-    <div className="w-full h-screen bg-[#00000036] fixed top-0 left-0 z-50 flex items-center justify-center">
-      <div className="w-[500px] min-h-[500px] bg-white rounded-xl shadow p-3">
-        <div className="w-full flex justify-end">
-          <IoCloseOutline
-            size={40}
-            className="text-black cursor-pointer"
-            onClick={() => setOpen(false)}
-          />
-        </div>
-        <div className="w-full">
-          {
-            stripePromise && clientSecret &&(
-              <Elements stripe={stripePromise} options={{clientSecret}}>
-                <CheckoutForm setOpen={setOpen} data={data}/>
-              </Elements>
-            )
-          }
-        </div>
-      </div>
-    </div>
-  )}
-</>
+        {open && (
+          <div className="w-full h-screen bg-[#00000036] fixed top-0 left-0 z-50 flex items-center justify-center">
+            <div className="w-[500px] min-h-[500px] bg-white rounded-xl shadow p-3">
+              <div className="w-full flex justify-end">
+                <IoCloseOutline
+                  size={40}
+                  className="text-black cursor-pointer"
+                  onClick={() => setOpen(false)}
+                />
+              </div>
+              <div className="w-full">
+                {stripePromise && clientSecret && (
+                  <Elements stripe={stripePromise} options={{ clientSecret }}>
+                    <CheckoutForm setOpen={setOpen} data={data} />
+                  </Elements>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     </div>
   );
 };

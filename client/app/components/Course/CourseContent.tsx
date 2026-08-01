@@ -27,7 +27,7 @@ const CourseContent = ({ id, user }: Props) => {
         <Loader />
       ) : content ? (
         <>
-        <Header activeItem={1} open={open} setOpen={setOpen} route={route} setRoute={setRoute}/>
+        {/* <Header activeItem={1} open={open} setOpen={setOpen} route={route} setRoute={setRoute}/> */}
         <div className="w-full grid 800px:grid-cols-10">
           <Heading
             title={content[activeVideo]?.title}

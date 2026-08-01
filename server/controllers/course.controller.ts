@@ -273,6 +273,8 @@ export const addAnswer = CatchAsyncError(
       const newAnswer: any = {
         user: req.user,
         answer,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       question.questionReplies?.push(newAnswer);
@@ -336,7 +338,7 @@ export const addReview = CatchAsyncError(
       const courseId = req.params.id;
 
       const courseExists = userCourseList?.find(
-        (course: any) => course._id.toString() === courseId?.toString(),
+        (course: any) => course.courseId === courseId,
       );
 
       if (!courseExists) {
@@ -370,10 +372,20 @@ export const addReview = CatchAsyncError(
 
       await course.save();
 
-      const notification = {
+      if (courseId) {
+        await redis.set(
+          courseId.toString(),
+          JSON.stringify(course),
+          "EX",
+          604800, // 7 days expiration
+        );
+      }
+
+      await NotificationModel.create({
+        user: req.user?._id.toString(),
         title: "New Review Added",
         message: `${req.user?.name} has added a new review in ${course.name} course.`,
-      };
+      });
 
       res.status(200).json({
         success: true,
@@ -413,6 +425,8 @@ export const addReplyToReview = CatchAsyncError(
       const replyData: any = {
         user: req.user,
         comment,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       if (!review.commentReplies) {
@@ -422,6 +436,8 @@ export const addReplyToReview = CatchAsyncError(
       review.commentReplies?.push(replyData);
 
       await course.save();
+
+      await redis.set(courseId, JSON.stringify(course), "EX", 604800);
 
       res.status(200).json({
         success: true,
