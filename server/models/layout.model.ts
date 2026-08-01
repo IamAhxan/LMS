@@ -17,7 +17,7 @@ interface BannerImage extends Document{
 interface Layout extends Document {
     type: String;
     faq: FaqItem[]
-    categories: []
+    categories: Category[];
     banner: {
         image: BannerImage;
         title: string;

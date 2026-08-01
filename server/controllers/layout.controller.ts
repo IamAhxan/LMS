@@ -156,11 +156,18 @@ export const editLayout = CatchAsyncError(
 );
 
 // Get layout by type
+// Get layout by type
+// Get layout by type
 export const getLayoutByType = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { type } = req.params;
-      const layout = await LayoutModel.findOne({ type });
+
+      // Passing RegExp directly avoids the strict $regex query casting type mismatch
+      const layout = await LayoutModel.findOne({
+        type: new RegExp(`^${type}$`, "i"),
+      });
+
       res.status(200).json({
         success: true,
         layout,

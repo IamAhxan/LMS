@@ -19,14 +19,27 @@ type Props = {
   data: any;
   clientSecret?: string;
   stripePromise?: any;
-  setOpen?: (open: boolean) => void;
-  setRoute?: (route: string) => void;
+  setOpen: (open: boolean) => void;
+  setRoute: (route: string) => void;
 };
 
-const CourseDetails = ({ data, clientSecret, stripePromise }: Props) => {
+const CourseDetails = ({
+  data,
+  clientSecret,
+  stripePromise,
+  setOpen: openAuthModel,
+  setRoute,
+}: Props) => {
   const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
-  const user = userData?.user;
+  const [user, setUser] = useState<any>();
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (userData) {
+      setUser(userData);
+    }
+  }, [userData]);
+
 
   const discountPercentage =
     data?.estimatedPrice && data?.price
@@ -44,6 +57,8 @@ const CourseDetails = ({ data, clientSecret, stripePromise }: Props) => {
       console.log("Processing order...");
       setOpen(true);
     } else {
+      setRoute("Login");
+      openAuthModel(true);
     }
   };
 
