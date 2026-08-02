@@ -5,11 +5,12 @@ type Props ={
     setOpen: (open:boolean) => void;
     activeItem: any;
     component: any;
-    setRoute?: (route: string)=>void
+    setRoute?: (route: string)=>void;
+    refetch?: any;
 
 }
 
-const CustomModel:FC<Props> = ({open, setOpen, setRoute, component:Component}) => {
+const CustomModel:FC<Props> = ({open, setOpen, setRoute, component:Component, refetch}) => {
   return (
     <Modal
     open={open}
@@ -20,7 +21,7 @@ const CustomModel:FC<Props> = ({open, setOpen, setRoute, component:Component}) =
     <Box
     className = "absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[450px] bg-white dark:bg-slate-900 rounded-[8px] shadow outline-none"
     >
-        <Component setOpen={setOpen} setRoute={setRoute} />
+        <Component setOpen={setOpen} setRoute={setRoute} refetch={refetch} />
     </Box>
     </Modal>
   )

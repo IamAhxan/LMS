@@ -7,12 +7,14 @@ import { styles } from '../../../styles/style'
 import { useLoginMutation } from '@/redux/features/auth/authApi'
 import toast from 'react-hot-toast'
 import { signIn } from 'next-auth/react'
+import { VscRepoFetch } from 'react-icons/vsc'
 
 
 
 type Props = {
     setRoute : (route:string)=>void;
     setOpen : (route:boolean)=>void;
+    refetch: any;
 }
 
 const schema = Yup.object().shape({
@@ -20,7 +22,7 @@ const schema = Yup.object().shape({
     password: Yup.string().required("Please enter your password!").min(6),
 })
 
-const Login = ({setRoute, setOpen}: Props) => {
+const Login = ({setRoute, setOpen, refetch}: Props) => {
         const [show, setShow] = useState(false)
         const [login, {isLoading, isSuccess, error}] = useLoginMutation()
         const formik = useFormik({
@@ -38,6 +40,7 @@ const Login = ({setRoute, setOpen}: Props) => {
                 toast.success("Login successful!")
                 setRoute("")
                 setOpen(false)
+                refetch()
             }
             if(error){
                if("data" in error){

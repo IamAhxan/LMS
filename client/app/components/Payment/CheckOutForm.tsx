@@ -5,19 +5,25 @@ import { LinkAuthenticationElement, PaymentElement, useElements, useStripe } fro
    import { redirect } from "next/navigation";
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import socketIO from "socket.io-client";
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_URI || "http://localhost:8000";
+const socketId = socketIO(ENDPOINT, {
+  transports: ["websocket"],
+});
 
 type Props = {
     setOpen: any,
-    data:any
+    data:any,
+    user: any;
 }
 
-const CheckOutForm = ({setOpen, data}: Props) => {
+const CheckOutForm = ({setOpen, data, user}: Props) => {
     const stripe = useStripe();
     const elements = useElements();
     const [message, setMessage] = useState<any>("");
     const [createOrder, {data:orderData, error}] = useCreateOrderMutation();
     const [loadUser, setLoadUser] = useState(false);
-    const {} = useLoadUserQuery({skip:loadUser ? false: true})
+    const {data:userData} = useLoadUserQuery({skip:loadUser ? false: true})
     const [isLoading, setIsLoading] = useState(false);
 
 
@@ -37,12 +43,18 @@ const CheckOutForm = ({setOpen, data}: Props) => {
         }else if(paymentIntent && paymentIntent.status === "succeeded"){
             setIsLoading(false);
             createOrder({courseId:data._id, payment_info: paymentIntent})
+
         }
     }
 
     useEffect(()=>{
         if(orderData){
             setLoadUser(true);
+            socketId.emit("notification", {
+                title: "New Order",
+                message: `You have a new order for ${data?.name}`,
+                userId: user._id,
+            });
             redirect(`/course-access/${data._id}`);
         }
         if(error){
