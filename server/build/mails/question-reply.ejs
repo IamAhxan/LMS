@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { background-color: #f9f9f9; }
+        .container { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 30px; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .header { border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
+        
+        .question-section { margin-bottom: 25px; }
+        .label { font-size: 12px; font-weight: bold; text-transform: uppercase; color: #888; margin-bottom: 5px; display: block; }
+        
+        .text-content { 
+            font-size: 18px; 
+            color: #333; 
+            line-height: 1.6; 
+            background: #f0f7ff; 
+            padding: 15px; 
+            border-radius: 8px;
+            border-left: 5px solid #2196F3;
+        }
+
+        .reply-section { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background: #f4faf4; 
+            border-radius: 8px;
+            border-left: 5px solid #4CAF50;
+        }
+        .reply-text { font-size: 16px; color: #2e7d32; }
+
+        .no-reply { font-style: italic; color: #999; font-size: 14px; }
+        
+        .footer { font-size: 12px; color: #aaa; margin-top: 40px; text-align: center; border-top: 1px solid #eee; pt: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2 style="margin: 0; color: #444;">Support Thread</h2>
+            <p style="font-size: 13px; color: #666;">User: <%= user.name %></p>
+        </div>
+
+        <!-- Question Part -->
+        <div class="question-section">
+            <span class="label">Question</span>
+            <div class="text-content">
+                <%= questionText %>
+            </div>
+        </div>
+
+        <!-- Reply Part -->
+        <div class="reply-section">
+            <span class="label">Response</span>
+            <% if (replyText) { %>
+                <div class="reply-text">
+                    <%= replyText %>
+                </div>
+            <% } else { %>
+                <div class="no-reply">Our team is currently reviewing your question. Please check back soon.</div>
+            <% } %>
+        </div>
+
+        <div class="footer">
+            <p>Ref ID: <%= requestId %> | LMS Support Systems</p>
+        </div>
+    </div>
+</body>
+</html>

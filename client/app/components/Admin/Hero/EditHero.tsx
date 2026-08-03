@@ -27,12 +27,10 @@ const EditHero: FC<Props> = (props: Props) => {
       refetch()
       toast.success("Hero updated successfully")
     }
-    if(error){
-      if("data " in error){
-        const errorData = error as any;
-        toast.error(errorData?.data?.message)
-      }
-    }
+if (error && "data" in error) {
+  const errorData = error as any;
+  toast.error(errorData?.data?.message || "Failed to update Hero");
+}
   }, [data, isSuccess, error]);
 
   const handleUpdate = (e: any) => {

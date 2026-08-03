@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #333; line-height: 1.6; }
+        .container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #eee; border-radius: 8px; }
+        .header { border-bottom: 2px solid #4A90E2; padding-bottom: 10px; margin-bottom: 20px; }
+        .item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f9f9f9; }
+        .label { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <% 
+        // Define a helper to find the data regardless of nesting
+        // This checks if 'order.order' exists, otherwise uses 'order'
+        var details = (typeof order !== 'undefined' && order.order) ? order.order : order; 
+    %>
+    <div class="container">
+        <div class="header">
+            <h2>Order Confirmation</h2>
+        </div>
+        
+        <p>Thank you for your purchase. Here are your order details:</p>
+
+        <div class="item-row">
+            <span class="label">Course Name:</span>
+            <span><%= details.name %></span>
+        </div>
+
+        <div class="item-row">
+            <span class="label">Order ID:</span>
+            <span>#<%= details._id %></span>
+        </div>
+
+        <div class="item-row">
+            <span class="label">Amount Paid:</span>
+            <strong>$<%= details.price %></strong>
+        </div>
+
+        <div class="item-row">
+            <span class="label">Date:</span>
+            <span><%= details.date %></span>
+        </div>
+
+        <p style="margin-top: 30px;">Happy Learning!</p>
+    </div>
+</body>
+</html>

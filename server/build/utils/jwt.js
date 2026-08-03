@@ -12,13 +12,15 @@ export const accessTokenOptions = {
     expires: new Date(Date.now() + accessTokenExpire * 60 * 60 * 1000), // Convert seconds to milliseconds
     maxAge: accessTokenExpire * 60 * 60 * 1000, // Convert seconds to milliseconds
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "none",
+    secure: true,
 };
 export const refreshTokenOptions = {
     expires: new Date(Date.now() + refreshTokenExpire * 24 * 60 * 60 * 1000), // Convert seconds to milliseconds
     maxAge: refreshTokenExpire * 24 * 60 * 60 * 1000, // Convert seconds to milliseconds
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "none",
+    secure: true,
 };
 export const sendToken = (user, res, statusCode) => {
     const accessToken = user.SignAccessToken();
