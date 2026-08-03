@@ -5,6 +5,7 @@ import Heading from '../utils/Heading'
 import Header from '../components/Header'
 import Profile from "../components/Profile/Profile"
 import { useSelector } from 'react-redux'
+import Footer from '../components/Route/Footer'
 
 type Props = {}
 
@@ -14,7 +15,7 @@ const page: FC<Props> = (props) => {
      const [route, setRoute] = useState("Login");
      const {user} = useSelector((state:any)=>state.auth)
   return (
-    <div>
+    <div className='min-h-screen flex flex-col justify-between'>
       <Protected>
          <Heading
       title={`${user?.name} | E-Learning`}
@@ -29,6 +30,7 @@ const page: FC<Props> = (props) => {
       setRoute={setRoute}
       />
       <Profile user={user}/>
+      <Footer />
       </Protected>
     </div>
   )

@@ -454,7 +454,7 @@ const CourseContentMedia = ({
                       </small>
                     </div>
                   </div>
-                  {user?.role === "admin" && (
+                  {user?.role === "admin" && item.commentReplies.length=== 0 && (
                     <span
                       className={` ${styles.label} !ml-10 cursor-pointer`}
                       onClick={() => {
@@ -465,7 +465,7 @@ const CourseContentMedia = ({
                       Add Reply
                     </span>
                   )}
-                  {isReviewReply && (
+                  {isReviewReply && reviewId===item._id &&(
                     <div className="w-full flex relative">
                       <input
                         type="text"
