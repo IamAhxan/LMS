@@ -1,3 +1,5 @@
+'use client'
+
 import React, { FC, useEffect, useState } from "react";
 import UserAnalytics from "./../../components/Admin/Analytics/UsersAnalytics";
 import { BiBorderLeft } from "react-icons/bi";

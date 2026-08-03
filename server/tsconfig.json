@@ -9,8 +9,8 @@
     "skipLibCheck": true,
 
     /* File Layout */
-    // "rootDir": "./src",
-    // "outDir": "./dist",
+    "rootDir": "./",
+    "outDir": "./build",
 
     /* Types */
     "types": ["node"],

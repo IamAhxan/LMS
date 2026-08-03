@@ -4,14 +4,12 @@ import {
   useUpdateNotificationStatusMutation,
 } from "@/redux/features/notifications/notificationApi";
 import ThemeSwitcher from "../../utils/ThemeSwitcher";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
+
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_URI || "http://localhost:8000";
-const socketId = socketIO(ENDPOINT, {
-  transports: ["websocket"],
-});
 
 type Props = {
   open?: boolean;
@@ -26,14 +24,28 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
   const [updateNotificationStatus, { isSuccess }] =
     useUpdateNotificationStatusMutation();
   const [notifications, setNotifications] = useState<any>([]);
-  const [audio] = useState(
-    new Audio(
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const socketRef = useRef<ReturnType<typeof socketIO> | null>(null);
+
+  // Client-only setup: audio element + socket connection
+  useEffect(() => {
+    audioRef.current = new Audio(
       "https://res.cloudinary.com/damk25wo5/video/upload/v1693465789/notification_vcetjn.mp3",
-    ),
-  );
+    );
+    socketRef.current = socketIO(ENDPOINT, { transports: ["websocket"] });
+
+    socketRef.current.on("notification", () => {
+      refetch();
+      playerNotificationSound();
+    });
+
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, []);
 
   const playerNotificationSound = () => {
-    audio.play();
+    audioRef.current?.play();
   };
 
   useEffect(() => {
@@ -45,15 +57,8 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
     if (isSuccess) {
       refetch();
     }
-    audio.load();
+    audioRef.current?.load();
   }, [data, isSuccess]);
-
-  useEffect(() => {
-    socketId.on("notification", (data: any) => {
-      refetch();
-      playerNotificationSound();
-    });
-  }, []);
 
   const handleNotificationStatusChange = (id: string) => {
     updateNotificationStatus(id);
@@ -78,10 +83,9 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
             Notifications
           </h5>
 
-          {/* Notification Item Example */}
           {notifications &&
             notifications.map((item: any, index: number) => (
-              <div className="dark:bg-[#2d3a4ea1] bg-[#00000013] font-Poppins border-b dark:border-b-[#ffffff47] border-b-[#0000000f] rounded-md mb-2">
+              <div key={item._id || index} className="dark:bg-[#2d3a4ea1] bg-[#00000013] font-Poppins border-b dark:border-b-[#ffffff47] border-b-[#0000000f] rounded-md mb-2">
                 <div className="w-full flex items-center justify-between p-2">
                   <p className="text-black dark:text-white">{item.title}</p>
                   <p

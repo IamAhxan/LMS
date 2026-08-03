@@ -40,7 +40,7 @@ export const createLayout = CatchAsyncError(
           faq.map(async (item: any) => ({
             question: item.question,
             answer: item.answer,
-          }))
+          })),
         );
         await LayoutModel.create({ type: "FAQ", faq: faqItems });
       }
@@ -50,7 +50,7 @@ export const createLayout = CatchAsyncError(
         const categoriesItems = await Promise.all(
           categories.map(async (item: any) => ({
             title: item.title,
-          }))
+          })),
         );
         await LayoutModel.create({
           type: "Categories",
@@ -65,7 +65,7 @@ export const createLayout = CatchAsyncError(
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
-  }
+  },
 );
 
 // Edit layout (Upsert enabled so missing docs auto-create)
@@ -88,7 +88,7 @@ export const editLayout = CatchAsyncError(
         if (isNewImage) {
           if (bannerData?.banner?.image?.public_id) {
             await cloudinary.v2.uploader.destroy(
-              bannerData.banner.image.public_id
+              bannerData.banner.image.public_id,
             );
           }
           const myCloud = await cloudinary.v2.uploader.upload(image, {
@@ -109,7 +109,7 @@ export const editLayout = CatchAsyncError(
         await LayoutModel.findOneAndUpdate(
           { type: "Banner" },
           { type: "Banner", banner },
-          { upsert: true, new: true }
+          { upsert: true, new: true },
         );
       }
 
@@ -119,14 +119,14 @@ export const editLayout = CatchAsyncError(
           faq.map(async (item: any) => ({
             question: item.question,
             answer: item.answer,
-          }))
+          })),
         );
 
         // Uses findOneAndUpdate with upsert so it creates document if missing
         await LayoutModel.findOneAndUpdate(
           { type: "FAQ" },
           { type: "FAQ", faq: faqItems },
-          { upsert: true, new: true }
+          { upsert: true, new: true },
         );
       }
 
@@ -135,13 +135,13 @@ export const editLayout = CatchAsyncError(
         const categoriesItems = await Promise.all(
           categories.map(async (item: any) => ({
             title: item.title,
-          }))
+          })),
         );
 
         await LayoutModel.findOneAndUpdate(
           { type: "Categories" },
           { type: "Categories", categories: categoriesItems },
-          { upsert: true, new: true }
+          { upsert: true, new: true },
         );
       }
 
@@ -152,7 +152,7 @@ export const editLayout = CatchAsyncError(
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
-  }
+  },
 );
 
 // Get layout by type
@@ -164,9 +164,9 @@ export const getLayoutByType = CatchAsyncError(
       const { type } = req.params;
 
       // Passing RegExp directly avoids the strict $regex query casting type mismatch
-      const layout = await LayoutModel.findOne({
-        type: new RegExp(`^${type}$`, "i"),
-      });
+      const layout = await LayoutModel.find({
+        type: { $regex: `^${type}$`, $options: "i" },
+      } as any);
 
       res.status(200).json({
         success: true,
@@ -175,5 +175,5 @@ export const getLayoutByType = CatchAsyncError(
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
-  }
+  },
 );
